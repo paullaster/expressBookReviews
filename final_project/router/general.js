@@ -64,20 +64,30 @@ public_users.get('/author/:author',async function (req, res) {
 // Get all books based on title
 const getBookByTitle = async function (title) {
   const booksKeys = Object.keys(books);
-  const booksByAuthor = booksKeys.filter(key => books[key].title === title);
-  const book = booksByAuthor.map(book => books[book]);
-  return book;
+  let booksByTitle = booksKeys.map(key => {
+    if(books[key].title === title) {
+      const { title, ...props } = books[key];
+      return {
+        isbn: key,
+       ...props,
+      }
+    } else {
+      return;
+    }
+  });
+  booksByTitle = booksByTitle.filter(book => book !== undefined || null);
+  return Object.values(booksByTitle);
 }
 public_users.get('/title/:title',async function (req, res) {
-  const book = await getBookByTitle(req.params.title);
-  return res.status(200).json({...book});
+  const booksByTitle = await getBookByTitle(req.params.title);
+  return res.status(200).json({booksByTitle});
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   const book = books[req.params.isbn];
   const reviews = book.reviews;
-  return res.status(200).json({reviews});
+  return res.status(200).json({...reviews});
 });
 
 module.exports.general = public_users;
