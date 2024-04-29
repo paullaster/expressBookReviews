@@ -51,10 +51,10 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   const review = book.reviews[user];
   if (review) {
     review.comment = req.query.comment;
-    return res.status(200).json({message: "Use reviews updated."});
+    return res.status(200).json({message: `User review for ISBN ${req.params.isbn} was updated.`});
   } else {
     book.reviews[user] = {comment: req.query.comment};
-    return res.status(200).json({message: "User review added."});
+    return res.status(200).json({message: `User review  for ISBN ${req.params.isbn} was added.`});
   }
 });
 
@@ -62,7 +62,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
   const book = books[req.params.isbn];
   const user = req.session.authorization['username'];
   delete book.reviews[user];
-  return res.status(202).json({message: "User review deleted."});
+  return res.status(202).json({message: `User review for ISBN ${req.params.isbn} was deleted. `});
 });
 
 module.exports.authenticated = regd_users;
