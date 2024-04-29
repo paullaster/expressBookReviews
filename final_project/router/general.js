@@ -42,13 +42,23 @@ public_users.get('/isbn/:isbn',async function (req, res) {
 // Get book details based on author
 const getBookDetailsByAuthor = async function (author) {
   const booksKeys = Object.keys(books);
-  const booksByAuthor = booksKeys.filter(key => books[key].author === author);
-  const book = booksByAuthor.map(book => books[book]);
-  return book;
+  let booksByAuthor = booksKeys.map(key => {
+    if(books[key].author === author) {
+      const { author, ...props } = books[key];
+      return {
+        isbn: key,
+       ...props,
+      }
+    } else {
+      return;
+    }
+  });
+  booksByAuthor = booksByAuthor.filter(book => book !== undefined || null);
+  return Object.values(booksByAuthor);
 }
 public_users.get('/author/:author',async function (req, res) {
-  const book = await getBookDetailsByAuthor(req.params.author);
-  return res.status(200).json({...book});
+  const booksByAuthor = await getBookDetailsByAuthor(req.params.author);
+  return res.status(200).json({booksByAuthor});
 });
 
 // Get all books based on title
